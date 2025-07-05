@@ -215,6 +215,10 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="bg-THISSHOULDNOTEXIST p-10 text-4xl">
+        If Tailwind works, you’ll see a build error.
+      </div>
+
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -285,11 +289,10 @@ export default function Component() {
                     {dailyTasks.map((task) => (
                       <div
                         key={task.id}
-                        className={`group flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${
-                          task.completed
-                            ? "bg-slate-50 border-slate-200"
-                            : "bg-white border-slate-200 hover:border-slate-300"
-                        } ${task.isPermanent ? "border-l-4 border-l-blue-500" : ""}`}
+                        className={`group flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${task.completed
+                          ? "bg-slate-50 border-slate-200"
+                          : "bg-white border-slate-200 hover:border-slate-300"
+                          } ${task.isPermanent ? "border-l-4 border-l-blue-500" : ""}`}
                       >
                         <Checkbox
                           checked={task.completed}
@@ -374,13 +377,12 @@ export default function Component() {
                         return (
                           <div
                             key={task.id}
-                            className={`group flex items-start gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${
-                              task.completed
-                                ? "bg-slate-50 border-slate-200"
-                                : overdue
-                                  ? "bg-red-50 border-red-200"
-                                  : "bg-white border-slate-200 hover:border-slate-300"
-                            } ${task.isPermanent ? "border-l-4 border-l-green-500" : ""}`}
+                            className={`group flex items-start gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${task.completed
+                              ? "bg-slate-50 border-slate-200"
+                              : overdue
+                                ? "bg-red-50 border-red-200"
+                                : "bg-white border-slate-200 hover:border-slate-300"
+                              } ${task.isPermanent ? "border-l-4 border-l-green-500" : ""}`}
                           >
                             <Checkbox
                               checked={task.completed}
