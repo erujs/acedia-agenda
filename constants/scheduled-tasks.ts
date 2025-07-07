@@ -7,33 +7,23 @@ const getRelativeDate = (daysFromToday: number): string => {
 
 export const SCHEDULED_TASKS = [
   {
-    title: "Weekly Planning Session",
-    description: "Review goals, plan upcoming week, and organize priorities",
-    date: getRelativeDate(7), // Next week
+    title: "Workstation Cleanup",
+    description: "Clean desktop table and pheriperals",
+    date: getRelativeDate(5),
   },
   {
-    title: "Monthly Budget Review",
-    description: "Check expenses, review budget, and plan financial goals",
-    date: getRelativeDate(30), // Next month
+    title: "Fold clothes",
+    description: "Fold my clothes",
+    date: getRelativeDate(5),
   },
   {
-    title: "Health Check Appointment",
+    title: "APE",
     description: "Schedule and attend regular health checkup",
-    date: getRelativeDate(90), // 3 months from now
+    date: getRelativeDate(15),
   },
   {
-    title: "Backup Important Files",
-    description: "Create backup of important documents and photos",
-    date: getRelativeDate(14), // 2 weeks from now
-  },
-  {
-    title: "Deep Clean Living Space",
-    description: "Thorough cleaning and organizing of home/workspace",
-    date: getRelativeDate(21), // 3 weeks from now
-  },
-  {
-    title: "Review and Update Resume",
-    description: "Update resume with recent achievements and skills",
-    date: getRelativeDate(60), // 2 months from now
+    title: "Post Wedding Pictures",
+    description: "Filter and upload wedding pictures to fb and ig",
+    date: getRelativeDate(2),
   },
 ]

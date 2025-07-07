@@ -1,18 +1,16 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Plus, Trash2, Calendar, RotateCcw, CheckCircle2, Clock } from "lucide-react"
-import { DAILY_TASKS } from "@/constants/daily-tasks"
-import { SCHEDULED_TASKS } from "@/constants/scheduled-tasks"
+import { Plus, Trash2, Calendar, RotateCcw, CheckCircle2, Circle } from "lucide-react"
+import { DAILY_TASKS } from "../constants/daily-tasks"
+import { SCHEDULED_TASKS } from "../constants/scheduled-tasks"
 
 interface DailyTask {
   id: string
@@ -140,7 +138,8 @@ export default function Component() {
     setDailyTasks(dailyTasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
   }
 
-  const removeDailyTask = (id: string) => {
+  const removeDailyTask = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent triggering the toggle
     const task = dailyTasks.find((t) => t.id === id)
     if (task?.isPermanent) return
     setDailyTasks(dailyTasks.filter((task) => task.id !== id))
@@ -177,7 +176,8 @@ export default function Component() {
     setScheduledTasks(scheduledTasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
   }
 
-  const removeScheduledTask = (id: string) => {
+  const removeScheduledTask = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent triggering the toggle
     const taskToRemove = scheduledTasks.find((task) => task.id === id)
     if (taskToRemove?.isPermanent) {
       return // Don't allow deletion of permanent tasks
@@ -211,235 +211,276 @@ export default function Component() {
 
   const dailyCompleted = dailyTasks.filter((t) => t.completed).length
   const scheduledCompleted = scheduledTasks.filter((t) => t.completed).length
-  const dailyProgress = dailyTasks.length > 0 ? (dailyCompleted / dailyTasks.length) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <div className="bg-THISSHOULDNOTEXIST p-10 text-4xl">
-        If Tailwind works, you’ll see a build error.
-      </div>
+    <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <Tabs defaultValue="daily" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 h-12 cursor-pointer">
+          <TabsTrigger value="daily" className="text-sm font-medium cursor-pointer hover:bg-muted/80 transition-colors">
+            <div className="flex items-center gap-2">
+              <Circle className="h-4 w-4" />
+              Daily Tasks
+              <Badge variant="secondary" className="ml-1">
+                {dailyCompleted}/{dailyTasks.length}
+              </Badge>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger
+            value="scheduled"
+            className="text-sm font-medium cursor-pointer hover:bg-muted/80 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Scheduled
+              <Badge variant="secondary" className="ml-1">
+                {scheduledCompleted}/{scheduledTasks.length}
+              </Badge>
+            </div>
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Task Manager</h1>
-          <p className="text-slate-600">Stay organized and productive</p>
-        </div>
-
-        <Tabs defaultValue="daily" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-12">
-            <TabsTrigger value="daily" className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              Daily Tasks ({dailyCompleted}/{dailyTasks.length})
-            </TabsTrigger>
-            <TabsTrigger value="scheduled" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Scheduled ({scheduledCompleted}/{scheduledTasks.length})
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Daily Tasks Tab */}
-          <TabsContent value="daily">
-            <Card className="shadow-lg border-0">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-2xl text-slate-900">Daily Tasks</CardTitle>
-                    <p className="text-slate-600 mt-1">Resets every day • Last reset: {lastResetDate}</p>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={resetDailyTasks} className="gap-2 bg-transparent">
-                    <RotateCcw className="h-4 w-4" />
-                    Reset
-                  </Button>
+        {/* Daily Tasks Tab */}
+        <TabsContent value="daily" className="space-y-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl">Daily Tasks</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">Resets every day • Last reset: {lastResetDate}</p>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={resetDailyTasks}
+                  className="gap-2 bg-transparent cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Reset
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Add new daily task */}
+              <div className="flex gap-3">
+                <Input
+                  placeholder="Add a new daily task..."
+                  value={newDailyTask}
+                  onChange={(e) => setNewDailyTask(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addDailyTask()}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={addDailyTask}
+                  className="gap-2 px-6 cursor-pointer hover:bg-primary/90 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add
+                </Button>
+              </div>
 
-                {/* Progress Section */}
-                {dailyTasks.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Progress</span>
-                      <span className="font-medium text-slate-900">{Math.round(dailyProgress)}% Complete</span>
-                    </div>
-                    <Progress value={dailyProgress} className="h-2" />
+              {/* Daily tasks list */}
+              <div className="space-y-3">
+                {dailyTasks.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-12">
+                    <Circle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No daily tasks yet. Add one above!</p>
                   </div>
-                )}
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                {/* Add new daily task */}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add a new daily task..."
-                    value={newDailyTask}
-                    onChange={(e) => setNewDailyTask(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && addDailyTask()}
-                    className="flex-1"
-                  />
-                  <Button onClick={addDailyTask} className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add
-                  </Button>
-                </div>
-
-                <Separator />
-
-                {/* Daily tasks list */}
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-3">
-                    {dailyTasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className={`group flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${task.completed
-                          ? "bg-slate-50 border-slate-200"
-                          : "bg-white border-slate-200 hover:border-slate-300"
-                          } ${task.isPermanent ? "border-l-4 border-l-blue-500" : ""}`}
-                      >
-                        <Checkbox
-                          checked={task.completed}
-                          onCheckedChange={() => toggleDailyTask(task.id)}
-                          className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-                        />
-                        <span className={`flex-1 ${task.completed ? "line-through text-slate-500" : "text-slate-900"}`}>
+                ) : (
+                  dailyTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      onClick={() => toggleDailyTask(task.id)}
+                      className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+                        task.completed
+                          ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100"
+                          : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
+                      } ${task.isPermanent ? "border-l-4 border-l-blue-500" : ""}`}
+                    >
+                      <div className="flex-shrink-0">
+                        {task.completed ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className={`block text-sm font-medium transition-all ${
+                            task.completed
+                              ? "line-through text-muted-foreground"
+                              : "text-foreground group-hover:text-primary"
+                          }`}
+                        >
                           {task.text}
                         </span>
                         {task.isPermanent && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                            Default
+                          <Badge variant="outline" className="mt-1 text-xs">
+                            Default Task
                           </Badge>
                         )}
+                      </div>
+                      {!task.isPermanent && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => removeDailyTask(task.id, e)}
+                          className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Progress section */}
+              {dailyTasks.length > 0 && (
+                <div className="space-y-3 pt-4 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Daily Progress</span>
+                    <span className="text-sm text-muted-foreground">
+                      {dailyCompleted} of {dailyTasks.length} completed
+                    </span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500 ease-out"
+                      style={{ width: `${(dailyCompleted / dailyTasks.length) * 100}%` }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <span className="text-2xl font-bold text-primary">
+                      {Math.round((dailyCompleted / dailyTasks.length) * 100)}%
+                    </span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Scheduled Tasks Tab */}
+        <TabsContent value="scheduled" className="space-y-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Scheduled Tasks</CardTitle>
+              <p className="text-sm text-muted-foreground">Plan tasks for specific dates</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Add new scheduled task */}
+              <div className="space-y-3 p-4 bg-muted/30 rounded-xl">
+                <Input
+                  placeholder="Task title..."
+                  value={newScheduledTask.title}
+                  onChange={(e) => setNewScheduledTask({ ...newScheduledTask, title: e.target.value })}
+                />
+                <Input
+                  placeholder="Description (optional)..."
+                  value={newScheduledTask.description}
+                  onChange={(e) => setNewScheduledTask({ ...newScheduledTask, description: e.target.value })}
+                />
+                <div className="flex gap-3">
+                  <Input
+                    type="date"
+                    value={newScheduledTask.date}
+                    onChange={(e) => setNewScheduledTask({ ...newScheduledTask, date: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={addScheduledTask}
+                    className="gap-2 px-6 cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Task
+                  </Button>
+                </div>
+              </div>
+
+              {/* Scheduled tasks list */}
+              <div className="space-y-3">
+                {sortedScheduledTasks.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-12">
+                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No scheduled tasks yet. Create one above!</p>
+                  </div>
+                ) : (
+                  sortedScheduledTasks.map((task) => {
+                    const overdue = isOverdue(task.date) && !task.completed
+                    return (
+                      <div
+                        key={task.id}
+                        onClick={() => toggleScheduledTask(task.id)}
+                        className={`group flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+                          task.completed
+                            ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100"
+                            : overdue
+                              ? "bg-red-50 border-red-200 hover:border-red-300 hover:bg-red-100"
+                              : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
+                        } ${task.isPermanent ? "border-l-4 border-l-green-500" : ""}`}
+                      >
+                        <div className="flex-shrink-0 mt-0.5">
+                          {task.completed ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span
+                              className={`font-medium transition-all ${
+                                task.completed
+                                  ? "line-through text-muted-foreground"
+                                  : "text-foreground group-hover:text-primary"
+                              }`}
+                            >
+                              {task.title}
+                            </span>
+                            {task.isPermanent && (
+                              <Badge variant="outline" className="text-xs">
+                                Default
+                              </Badge>
+                            )}
+                          </div>
+                          {task.description && (
+                            <p className={`text-sm text-muted-foreground ${task.completed ? "line-through" : ""}`}>
+                              {task.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span className={overdue ? "text-red-600 font-medium" : "text-muted-foreground"}>
+                                {formatDate(task.date)}
+                              </span>
+                            </div>
+                            {overdue && (
+                              <Badge variant="destructive" className="text-xs">
+                                Overdue
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                         {!task.isPermanent && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeDailyTask(task.id)}
-                            className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0 text-slate-400 hover:text-red-500 transition-opacity"
+                            onClick={(e) => removeScheduledTask(task.id, e)}
+                            className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Scheduled Tasks Tab */}
-          <TabsContent value="scheduled">
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="text-2xl text-slate-900">Scheduled Tasks</CardTitle>
-                <p className="text-slate-600">Plan tasks for specific dates</p>
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                {/* Add new scheduled task */}
-                <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
-                  <Input
-                    placeholder="Task title..."
-                    value={newScheduledTask.title}
-                    onChange={(e) => setNewScheduledTask({ ...newScheduledTask, title: e.target.value })}
-                  />
-                  <Input
-                    placeholder="Description (optional)..."
-                    value={newScheduledTask.description}
-                    onChange={(e) => setNewScheduledTask({ ...newScheduledTask, description: e.target.value })}
-                  />
-                  <div className="flex gap-2">
-                    <Input
-                      type="date"
-                      value={newScheduledTask.date}
-                      onChange={(e) => setNewScheduledTask({ ...newScheduledTask, date: e.target.value })}
-                      className="flex-1"
-                    />
-                    <Button onClick={addScheduledTask} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Task
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Scheduled tasks list */}
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-3">
-                    {sortedScheduledTasks.length === 0 ? (
-                      <div className="text-center text-slate-500 py-12">
-                        <Calendar className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-                        <p>No scheduled tasks yet</p>
-                        <p className="text-sm">Add your first task above</p>
-                      </div>
-                    ) : (
-                      sortedScheduledTasks.map((task) => {
-                        const overdue = isOverdue(task.date) && !task.completed
-                        return (
-                          <div
-                            key={task.id}
-                            className={`group flex items-start gap-3 p-4 rounded-lg border transition-all hover:shadow-md ${task.completed
-                              ? "bg-slate-50 border-slate-200"
-                              : overdue
-                                ? "bg-red-50 border-red-200"
-                                : "bg-white border-slate-200 hover:border-slate-300"
-                              } ${task.isPermanent ? "border-l-4 border-l-green-500" : ""}`}
-                          >
-                            <Checkbox
-                              checked={task.completed}
-                              onCheckedChange={() => toggleScheduledTask(task.id)}
-                              className="mt-1 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div
-                                className={`font-medium ${task.completed ? "line-through text-slate-500" : "text-slate-900"}`}
-                              >
-                                {task.title}
-                              </div>
-                              {task.description && (
-                                <div
-                                  className={`text-sm mt-1 ${task.completed ? "line-through text-slate-400" : "text-slate-600"}`}
-                                >
-                                  {task.description}
-                                </div>
-                              )}
-                              <div className="flex items-center gap-2 mt-2">
-                                <Calendar className="h-3 w-3 text-slate-400" />
-                                <span className={`text-sm ${overdue ? "text-red-600 font-medium" : "text-slate-500"}`}>
-                                  {formatDate(task.date)}
-                                </span>
-                                {overdue && (
-                                  <Badge variant="destructive" className="text-xs">
-                                    Overdue
-                                  </Badge>
-                                )}
-                                {task.isPermanent && (
-                                  <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
-                                    Default
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                            {!task.isPermanent && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeScheduledTask(task.id)}
-                                className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0 text-slate-400 hover:text-red-500 transition-opacity"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+                    )
+                  })
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

@@ -1,7 +1,5 @@
-"use client"
-
 import Component from "./todo-list"
 
-export default function Page() {
+export default function Home() {
   return <Component />
 }
