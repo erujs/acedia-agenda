@@ -26,4 +26,9 @@ export const SCHEDULED_TASKS = [
     description: "Filter and upload wedding pictures to fb and ig",
     date: getRelativeDate(2),
   },
+  {
+    title: "Clean Kitchen",
+    description: "Clean Kitchen",
+    date: getRelativeDate(2),
+  },
 ]
