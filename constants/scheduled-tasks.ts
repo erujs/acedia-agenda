@@ -12,18 +12,13 @@ export const SCHEDULED_TASKS = [
     date: getRelativeDate(5),
   },
   {
-    title: "Fold clothes",
-    description: "Fold my clothes",
-    date: getRelativeDate(5),
-  },
-  {
     title: "APE",
     description: "Schedule and attend regular health checkup",
     date: getRelativeDate(15),
   },
   {
     title: "Post Wedding Pictures",
-    description: "Filter and upload wedding pictures to fb and ig",
+    description: "tag people",
     date: getRelativeDate(2),
   },
   {
