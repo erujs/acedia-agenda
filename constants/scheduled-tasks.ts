@@ -26,4 +26,9 @@ export const SCHEDULED_TASKS = [
     description: "Clean Kitchen",
     date: getRelativeDate(2),
   },
+    {
+    title: "Dry Clean Suit",
+    description: "Dry clean the suit from je&co and ask if they have hanger spare, also check if they are also accepting alters from different clothing brands like uniqlo",
+    date: getRelativeDate(2),
+  },
 ]
