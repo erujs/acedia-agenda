@@ -27,6 +27,7 @@ export default function TodoPage() {
         const result = await res.json()
         setQuote(`${result.content} — ${result.author}`)
       } catch (error) {
+        console.error("Failed to fetch quote:", error)
         setQuote("Small steps every day lead to big results.")
       }
     }
