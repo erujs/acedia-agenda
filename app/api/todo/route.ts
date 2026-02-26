@@ -9,7 +9,7 @@ export async function GET() {
     await resend.emails.send({
       from: "Acedia Agenda <hello@jerus.dev>",
       to: "a.m.jerus@gmail.com",
-      subject: "Your Agenda is waiting 👀",
+      subject: "Time to make progress",
       html: emailTemplate(),
     })
 
