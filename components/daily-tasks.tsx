@@ -19,20 +19,22 @@ export default function TodoPage() {
       completed: false,
     }))
     setDailyTasks(defaultTasks)
+    setQuote("Progress is just consistent iterations.")
 
+    // TODO: Implement quote fetching API
     // Fetch motivational quote
-    const fetchQuote = async () => {
-      try {
-        const res = await fetch("https://api.quotable.io/random")
-        const result = await res.json()
-        setQuote(`${result.content} — ${result.author}`)
-      } catch (error) {
-        console.error("Failed to fetch quote:", error)
-        setQuote("Small steps every day lead to big results.")
-      }
-    }
+    // const fetchQuote = async () => {
+    //   try {
+    //     const res = await fetch("https://zenquotes.io/api/random")
+    //     const data = await res.json()
+    //     setQuote(`${data[0].q} — ${data[0].a}`)
+    //   } catch (error) {
+    //     console.error("Failed to fetch quote:", error)
+    //     setQuote("Progress is just consistent iterations.")
+    //   }
+    // }
 
-    fetchQuote()
+    // fetchQuote()
   }, [])
 
   const toggleDailyTask = (id: string) => {
@@ -70,8 +72,8 @@ export default function TodoPage() {
                       key={task.id}
                       onClick={() => toggleDailyTask(task.id)}
                       className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${task.completed
-                          ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100 text-black"
-                          : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
+                        ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100 text-black"
+                        : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
                         }`}
                     >
                       <div className="flex-shrink-0">
@@ -85,8 +87,8 @@ export default function TodoPage() {
                       <div className="flex-1 min-w-0">
                         <span
                           className={`block text-sm font-medium transition-all ${task.completed
-                              ? "line-through text-muted-foreground"
-                              : "text-foreground group-hover:text-primary"
+                            ? "line-through text-muted-foreground"
+                            : "text-foreground group-hover:text-primary"
                             }`}
                         >
                           {task.text}

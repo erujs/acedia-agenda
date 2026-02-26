@@ -1,7 +1,7 @@
 export function emailTemplate() {
   return `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111;">      
-      <h2 style="margin-bottom:12px;">Hey Master👋</h2>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">      
+      <h2 style="margin-bottom:12px;">Hey Master 👋</h2>
       <p style="margin:0;line-height:1.5;">
         Your tasks are ready when you are.
       </p>
