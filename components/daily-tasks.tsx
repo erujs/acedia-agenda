@@ -4,52 +4,48 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Circle, CheckCircle2 } from "lucide-react"
-import data from "@/lib/data/daily-tasks.json"
-import { DailyTask } from "@/lib/data-types"
+import data from "@/lib/data/tasks.json"
+import { Schedule, RawTaskData, FilteredTaskData } from "@/lib/data-types"
+
+function getTodaySchedule(): "weekdays" | "weekends" {
+  const day = new Date().getDay()
+  return day === 0 || day === 6 ? "weekends" : "weekdays"
+}
+
+function isTaskForToday(schedule: Schedule, todaySchedule: "weekdays" | "weekends"): boolean {
+  return schedule === "daily" || schedule === todaySchedule
+}
 
 export default function TodoPage() {
-  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([])
+  const [tasks, setTasks] = useState<FilteredTaskData[]>([])
   const [quote, setQuote] = useState<string>("Loading inspiration...")
 
+  const todaySchedule = getTodaySchedule()
+
   useEffect(() => {
-    // Initialize default daily tasks
-    const defaultTasks: DailyTask[] = data["daily-tasks"].map((task, index) => ({
-      id: `daily-${index}`,
-      text: task,
-      completed: false,
-    }))
-    setDailyTasks(defaultTasks)
+    const todayTasks: FilteredTaskData[] = (data["tasks"] as RawTaskData[])
+      .filter((task) => isTaskForToday(task.schedule, todaySchedule))
+      .map((task, index) => ({
+        id: `task-${index}`,
+        label: task.label,
+        completed: false,
+      }))
+
+    setTasks(todayTasks)
     setQuote("Progress is just consistent iterations.")
-
-    // TODO: Implement quote fetching API
-    // Fetch motivational quote
-    // const fetchQuote = async () => {
-    //   try {
-    //     const res = await fetch("https://zenquotes.io/api/random")
-    //     const data = await res.json()
-    //     setQuote(`${data[0].q} — ${data[0].a}`)
-    //   } catch (error) {
-    //     console.error("Failed to fetch quote:", error)
-    //     setQuote("Progress is just consistent iterations.")
-    //   }
-    // }
-
-    // fetchQuote()
   }, [])
 
-  const toggleDailyTask = (id: string) => {
-    setDailyTasks((prev) =>
+  const toggleTask = (id: string) => {
+    setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     )
   }
 
-  const dailyCompleted = dailyTasks.filter((t) => t.completed).length
+  const completedCount = tasks.filter((t) => t.completed).length
   const progressPercentage =
-    dailyTasks.length > 0
-      ? Math.round((dailyCompleted / dailyTasks.length) * 100)
-      : 0
+    tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -58,22 +54,32 @@ export default function TodoPage() {
           <TabsContent value="daily" className="space-y-6">
             <Card className="shadow-sm">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl">Agenda</CardTitle>
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-xl">Agenda</CardTitle>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-foreground">
+                      {new Date().toLocaleDateString("en-US", { weekday: "long" })}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    </p>
+                  </div>
+                </div>
                 <p className="text-sm text-muted-foreground mt-1 italic">
                   <q>{quote}</q>
                 </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Daily tasks list */}
+                {/* Task list */}
                 <div className="space-y-3">
-                  {dailyTasks.map((task) => (
+                  {tasks.map((task) => (
                     <div
                       key={task.id}
-                      onClick={() => toggleDailyTask(task.id)}
+                      onClick={() => toggleTask(task.id)}
                       className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${task.completed
-                        ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100 text-black"
-                        : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
+                          ? "bg-green-50 border-green-200 hover:border-green-300 hover:bg-green-100 text-black"
+                          : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
                         }`}
                     >
                       <div className="flex-shrink-0">
@@ -87,11 +93,11 @@ export default function TodoPage() {
                       <div className="flex-1 min-w-0">
                         <span
                           className={`block text-sm font-medium transition-all ${task.completed
-                            ? "line-through text-muted-foreground"
-                            : "text-foreground group-hover:text-primary"
+                              ? "line-through text-muted-foreground"
+                              : "text-foreground group-hover:text-primary"
                             }`}
                         >
-                          {task.text}
+                          {task.label}
                         </span>
                       </div>
                     </div>
@@ -99,14 +105,12 @@ export default function TodoPage() {
                 </div>
 
                 {/* Progress section */}
-                {dailyTasks.length > 0 && (
+                {tasks.length > 0 && (
                   <div className="space-y-3 pt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">
-                        Progress
-                      </span>
+                      <span className="text-sm font-medium">Progress</span>
                       <span className="text-sm text-muted-foreground">
-                        {dailyCompleted} of {dailyTasks.length} completed
+                        {completedCount} of {tasks.length} completed
                       </span>
                     </div>
 

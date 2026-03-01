@@ -1,6 +1,12 @@
-export interface DailyTask {
+export type Schedule = "daily" | "weekdays" | "weekends"
+
+export interface RawTaskData {
+  label: string
+  schedule: Schedule
+}
+
+export interface FilteredTaskData {
   id: string
-  text: string
+  label: string
   completed: boolean
-  isPermanent?: boolean
 }
