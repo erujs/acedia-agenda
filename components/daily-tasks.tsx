@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Circle, CheckCircle2 } from "lucide-react"
 import data from "@/lib/data/tasks.json"
 import { Schedule, RawTaskData, FilteredTaskData } from "@/lib/data-types"
