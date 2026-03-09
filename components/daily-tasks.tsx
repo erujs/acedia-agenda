@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Circle, CheckCircle2 } from "lucide-react"
-import data from "@/lib/data/tasks.json"
 import { Schedule, RawTaskData, FilteredTaskData } from "@/lib/data-types"
+import { useAPI } from "@/hooks/use-api"
 
 function getTodaySchedule(): "weekdays" | "weekends" {
   const day = new Date().getDay()
@@ -18,11 +18,15 @@ function isTaskForToday(schedule: Schedule, todaySchedule: "weekdays" | "weekend
 export default function TodoPage() {
   const [tasks, setTasks] = useState<FilteredTaskData[]>([])
   const [quote, setQuote] = useState<string>("Loading inspiration...")
+  const API_URL = process.env.NEXT_PUBLIC_GULA_ARCANA_URL || "http://localhost:3000";
+  const { data, error } = useAPI<RawTaskData[]>(`${API_URL}/api/tasks`)
 
   const todaySchedule = getTodaySchedule()
 
   useEffect(() => {
-    const todayTasks: FilteredTaskData[] = (data["tasks"] as RawTaskData[])
+    if (!data) return
+    const tasksArray = Array.isArray(data) ? data : (data as any)["tasks"] as RawTaskData[]
+    const todayTasks: FilteredTaskData[] = tasksArray
       .filter((task) => isTaskForToday(task.schedule, todaySchedule))
       .map((task, index) => ({
         id: `task-${index}`,
@@ -32,7 +36,7 @@ export default function TodoPage() {
 
     setTasks(todayTasks)
     setQuote("Progress is just consistent iterations.")
-  }, [])
+  }, [data, todaySchedule])
 
   const toggleTask = (id: string) => {
     setTasks((prev) =>
