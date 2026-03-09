@@ -19,7 +19,7 @@ export default function TodoPage() {
   const [tasks, setTasks] = useState<FilteredTaskData[]>([])
   const [quote, setQuote] = useState<string>("Loading inspiration...")
   const API_URL = process.env.NEXT_PUBLIC_GULA_ARCANA_URL || "http://localhost:3000";
-  const { data, error } = useAPI<RawTaskData[]>(`${API_URL}/api/tasks`)
+  const { data } = useAPI<RawTaskData[]>(`${API_URL}/api/tasks`)
 
   const todaySchedule = getTodaySchedule()
 
