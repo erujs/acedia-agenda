@@ -55,27 +55,27 @@ export default function TodoPage() {
     throw new Error(error)
   }
 
-  if (true) {
+  if (loading || !tasks) {
     return <DailyTasksSkeleton />
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl space-y-6">
-        <Card className="shadow-sm">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-foreground">
+      <div className="w-full max-w-3xl space-y-6 border-2 !border-muted-foreground rounded-xl">
+        <Card className="shadow-sm bg-foreground">
           <CardHeader>
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between text-secondary">
               <CardTitle className="text-xl">Agenda</CardTitle>
               <div className="text-right">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-semibold">
                   {new Date().toLocaleDateString("en-US", { weekday: "long" })}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs">
                   {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                 </p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground mt-1 italic">
+            <p className="text-sm text-secondary italic">
               <q>{quote}</q>
             </p>
           </CardHeader>
@@ -88,15 +88,15 @@ export default function TodoPage() {
                   key={task.id}
                   onClick={() => toggleTask(task.id)}
                   className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${task.completed
-                    ? "bg-teal-50 border-teal-200 hover:border-teal-300 hover:bg-teal-100 text-black"
-                    : "bg-background border-border hover:border-primary/50 hover:shadow-md hover:bg-muted/30"
+                    ? "bg-teal-50 hover:bg-teal-100"
+                    : "bg-foreground !border-muted-foreground hover:!border-teal-400 hover:shadow-md hover:bg-background"
                     }`}
                 >
                   <div className="flex-shrink-0">
                     {task.completed ? (
                       <CheckCircle2 className="h-5 w-5 text-teal-600" />
                     ) : (
-                      <Circle className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <Circle className="h-5 w-5 text-muted-foreground group-hover:text-teal-400 transition-colors" />
                     )}
                   </div>
 
@@ -104,7 +104,7 @@ export default function TodoPage() {
                     <span
                       className={`block text-sm font-medium transition-all ${task.completed
                         ? "line-through text-muted-foreground"
-                        : "text-foreground group-hover:text-primary"
+                        : "text-secondary group-hover:text-primary"
                         }`}
                     >
                       {task.label}
@@ -119,12 +119,12 @@ export default function TodoPage() {
               <div className="space-y-3 pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Progress</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-secondary">
                     {completedCount} of {todayTasks?.length} completed
                   </span>
                 </div>
 
-                <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-muted-foreground rounded-full h-3 overflow-hidden">
                   <div
                     className="bg-gradient-to-r from-blue-500 to-teal-400 h-3 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progressPercentage}%` }}
@@ -132,7 +132,7 @@ export default function TodoPage() {
                 </div>
 
                 <div className="text-center">
-                  <span className="text-2xl font-bold text-primary">
+                  <span className="text-2xl font-bold text-secondary">
                     {progressPercentage}%
                   </span>
                 </div>
