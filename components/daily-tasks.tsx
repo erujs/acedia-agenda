@@ -87,24 +87,26 @@ export default function TodoPage() {
                 <div
                   key={task.id}
                   onClick={() => toggleTask(task.id)}
-                  className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] ${task.completed
-                    ? "bg-teal-50 hover:bg-teal-100"
-                    : "bg-foreground !border-muted-foreground hover:!border-teal-400 hover:shadow-md hover:bg-background"
+                  className={`group flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105
+                    ${task.completed
+                      ? "bg-muted-foreground hover:bg-teal-100"
+                      : "bg-foreground !border-muted-foreground hover:!border-teal-100 hover:shadow-md"
                     }`}
                 >
                   <div className="flex-shrink-0">
                     {task.completed ? (
-                      <CheckCircle2 className="h-5 w-5 text-teal-600" />
+                      <CheckCircle2 className="h-5 w-5 text-teal-400" />
                     ) : (
-                      <Circle className="h-5 w-5 text-muted-foreground group-hover:text-teal-400 transition-colors" />
+                      <Circle className="h-5 w-5 text-muted-foreground group-hover:text-teal-100 transition-colors" />
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <span
-                      className={`block text-sm font-medium transition-all ${task.completed
-                        ? "line-through text-muted-foreground"
-                        : "text-secondary group-hover:text-primary"
+                      className={`block text-sm font-medium transition-all
+                        ${task.completed
+                          ? "line-through text-foreground"
+                          : "text-secondary"
                         }`}
                     >
                       {task.label}
@@ -126,7 +128,7 @@ export default function TodoPage() {
 
                 <div className="w-full bg-muted-foreground rounded-full h-3 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-blue-500 to-teal-400 h-3 rounded-full transition-all duration-500 ease-out"
+                    className="bg-gradient-to-r from-teal-100 to-teal-400 h-3 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
