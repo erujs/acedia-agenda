@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function DailyTasksSkeleton() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-foreground">
+    <div data-testid="skeleton" className="min-h-screen flex items-center justify-center p-4 bg-foreground">
       <div className="w-full max-w-3xl space-y-6 border-2 !border-muted-foreground rounded-xl">
         <Card className="shadow-sm bg-foreground">
           <CardHeader>

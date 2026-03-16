@@ -18,7 +18,7 @@ function isTaskForToday(schedule: Schedule, todaySchedule: "weekdays" | "weekend
 
 export default function TodoPage() {
   const [todayTasks, setTodayTasks] = useState<FilteredTaskData[]>([])
-  const [quote, setQuote] = useState<string>("Loading inspiration...")
+  const [quote, setQuote] = useState<string>("")
   const API_URL = process.env.NEXT_PUBLIC_GULA_ARCANA_URL || "http://localhost:3000";
   const { data: tasks, error, loading } = useAPI<RawTaskData[]>(`${API_URL}/api/tasks`)
 
